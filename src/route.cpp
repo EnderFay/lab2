@@ -1,7 +1,4 @@
 #include "../include/route.h"
-#include "../include/station.h"
-#include <iostream>
-#include <algorithm>
 
 Route::Route(int id, const std::string& name, int depStationId, int arrStationId, 
              const std::vector<int>& intermediate, double distance)
