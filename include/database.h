@@ -21,6 +21,13 @@ public:
     const std::vector<Station>& getAllStations() const;
     Station* findStation(int id);
     const Station* findStation(int id) const;
+
+    void addRoute(const Route& route);
+    void removeRoute(int id);
+    void editRoute(int id, const std::string& name, double distance);
+    const std::vector<Route>& getAllRoutes() const;
+    Route* findRoute(int id);
+    const Route* findRoute(int id) const;
 };
 
 
