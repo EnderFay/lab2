@@ -38,3 +38,40 @@ const Station* Database::findStation(int id) const {
         [id](const Station& s) { return s.getId() == id; });
     return it != stations.end() ? &(*it) : nullptr;
 }
+
+
+
+void Database::addRoute(const Route& route) {
+    routes.push_back(route);
+}
+
+void Database::removeRoute(int id) {
+    routes.erase(std::remove_if(routes.begin(), routes.end(),
+        [id](const Route& r) { return r.getId() == id; }), routes.end());
+}
+
+void Database::editRoute(int id, const std::string& name, double distance) {
+    for (auto& route : routes) {
+        if (route.getId() == id) {
+            route.setName(name);
+            route.setDistance(distance);
+            break;
+        }
+    }
+}
+
+const std::vector<Route>& Database::getAllRoutes() const {
+    return routes;
+}
+
+Route* Database::findRoute(int id) {
+    auto it = std::find_if(routes.begin(), routes.end(),
+        [id](const Route& r) { return r.getId() == id; });
+    return it != routes.end() ? &(*it) : nullptr;
+}
+
+const Route* Database::findRoute(int id) const {
+    auto it = std::find_if(routes.begin(), routes.end(),
+        [id](const Route& r) { return r.getId() == id; });
+    return it != routes.end() ? &(*it) : nullptr;
+}
