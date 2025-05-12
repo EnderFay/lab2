@@ -5,6 +5,7 @@
 #include <ctime>
 #include <vector>
 #include "route.h"
+using namespace std;
 enum class TrainStatus {
     SCHEDULED,
     DEPARTED,
@@ -17,20 +18,20 @@ public:
     int trainNumber;
     int capacity;   
 
-    std::string currentStation;
-    std::string destination;
-    std::chrono::system_clock::time_point departureTime;
-    std::string origin;
-    std::chrono::system_clock::duration travelDuration;
+   string currentStation;
+    string destination;
+    chrono::system_clock::time_point departureTime;
+    string origin;
+    chrono::system_clock::duration travelDuration;
     TrainStatus status;
-    std::vector<Ticket> tickets;
+    vector<Ticket> tickets;
     double speed;           
     double distanceTraveled; 
 
    
-    Train(int trainNumber = -1, int capacity = -1, const std::string& origin = "", const std::string& destination = "",
-        const std::chrono::system_clock::time_point& departureTime = std::chrono::system_clock::time_point(),
-        const std::chrono::system_clock::duration& travelDuration = std::chrono::system_clock::duration(),
+    Train(int trainNumber = -1, int capacity = -1, const string& origin = "", const string& destination = "",
+        const chrono::system_clock::time_point& departureTime = chrono::system_clock::time_point(),
+        const chrono::system_clock::duration& travelDuration = chrono::system_clock::duration(),
         double speed = NAN)  
     {
        
@@ -61,14 +62,14 @@ public:
         return true;
     }
 
-    void updatePosition(const std::chrono::system_clock::duration& elapsedTime) {
+    void updatePosition(const chrono::system_clock::duration& elapsedTime) {
         distanceTraveled += speed * elapsedTime.count();  
         if (distanceTraveled > 1000) {
             status = TrainStatus::EXPLODED;  
         }
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const Train& train) {
+    friend ostream& operator<<(ostream& os, const Train& train) {
         os << "Train rp  " << train.trainNumber;  
         return os;
     }
