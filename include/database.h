@@ -12,6 +12,7 @@
 class Database {
 private:
     std::vector<Station> stations;
+    std::vector<Route> routes;
     
 public:
     void addStation(const Station& station);
