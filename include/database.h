@@ -9,5 +9,18 @@
 #include "train.h"
 #include "ticket.h"
 
+class Database {
+private:
+    std::vector<Station> stations;
+    
+public:
+    void addStation(const Station& station);
+    void removeStation(int id);
+    void editStation(int id, const std::string& name, const std::string& city);
+    const std::vector<Station>& getAllStations() const;
+    Station* findStation(int id);
+    const Station* findStation(int id) const;
+};
+
 
 #endif
