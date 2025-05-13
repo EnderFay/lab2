@@ -116,10 +116,33 @@ const Train* Database::findTrain(int id) const {
     return it != trains.end() ? &(*it) : nullptr;
 }
 
+void Database::updateTrainStatuses(const std::tm& currentTime) {
+    for (auto& train : trains) {
+        train.updateStatus(currentTime);
+    }
+}
+
 void Database::addTicket(const Ticket& ticket) {
     tickets.push_back(ticket);
 }
 
+void Database::returnTicket(int id) {
+    for (auto& ticket : tickets) {
+        if (ticket.getId() == id) {
+            ticket.returnTicket();
+            if (Train* train = findTrain(ticket.getTrainId())) {
+                train->cancelBooking(1);
+            }
+            break;
+        }
+    }
+}
+
 const std::vector<Ticket>& Database::getAllTickets() const {
     return tickets;
+}
+
+
+void Database::setCurrentTime(const std::tm& time) {
+    currentTime = time;
 }
