@@ -7,6 +7,17 @@
 #include <ctime>
 #include <limits>
 
+
+std::string trim(const std::string& str) {
+    size_t first = str.find_first_not_of(' ');
+    if (std::string::npos == first) {
+        return "";
+    }
+    size_t last = str.find_last_not_of(' ');
+    return str.substr(first, (last - first + 1));
+}
+
+
 void Database::addStation(const Station& station) {
     stations.push_back(station);
 }
@@ -41,7 +52,6 @@ const Station* Database::findStation(int id) const {
         [id](const Station& s) { return s.getId() == id; });
     return it != stations.end() ? &(*it) : nullptr;
 }
-
 
 
 void Database::addRoute(const Route& route) {
@@ -80,7 +90,6 @@ const Route* Database::findRoute(int id) const {
 }
 
 
-
 void Database::addTrain(const Train& train) {
     trains.push_back(train);
 }
@@ -116,6 +125,8 @@ const Train* Database::findTrain(int id) const {
     return it != trains.end() ? &(*it) : nullptr;
 }
 
+
+
 void Database::updateTrainStatuses(const std::tm& currentTime) {
     for (auto& train : trains) {
         train.updateStatus(currentTime);
@@ -145,4 +156,81 @@ const std::vector<Ticket>& Database::getAllTickets() const {
 
 void Database::setCurrentTime(const std::tm& time) {
     currentTime = time;
+}
+
+
+void Database::displayAllStations() const {
+    for (const auto& station : stations) {
+        station.displayInfo();
+        std::cout << "-----------------\n";
+    }
+}
+
+void Database::displayAllRoutes() const {
+    for (const auto& route : routes) {
+        route.displayInfo(stations);
+        std::cout << "-----------------\n";
+    }
+}
+
+void Database::displayAllTrains() const {
+    for (const auto& train : trains) {
+        if (const Route* route = this->findRoute(train.getRouteId())) {
+            train.displayInfo(*route);
+            std::cout << "-----------------\n";
+        }
+    }
+}
+
+void Database::displayAllTickets() const {
+    for (const auto& ticket : tickets) {
+        if (const Train* train = this->findTrain(ticket.getTrainId())) {
+            ticket.displayInfo(*train);
+            std::cout << "-----------------\n";
+        }
+    }
+}
+
+
+void Database::simulateTimePassing(int days) {
+    currentTime.tm_mday += days;
+    std::mktime(&currentTime);
+    updateTrainStatuses(currentTime);
+}
+
+
+bool Database::saveData(const std::string& filename) const {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error opening file for saving: " << filename << std::endl;
+        return false;
+    }
+
+    if (!saveStations(file) || !saveRoutes(file) || !saveTrains(file) || !saveTickets(file)) {
+        std::cerr << "Error saving data to file." << std::endl;
+        file.close();
+        return false;
+    }
+
+    file.close();
+    std::cout << "Data saved to " << filename << std::endl;
+    return true;
+}
+
+bool Database::loadData(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error opening file for loading: " << filename << std::endl;
+        return false;
+    }
+
+    if (!loadStations(file) || !loadRoutes(file) || !loadTrains(file) || !loadTickets(file)) {
+        std::cerr << "Error loading data from file." << std::endl;
+        file.close();
+        return false;
+    }
+
+    file.close();
+    std::cout << "Data loaded from " << filename << std::endl;
+    return true;
 }
