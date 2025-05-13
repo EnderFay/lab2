@@ -12,7 +12,8 @@ private:
 public:
     Passenger(const std::string& name, const std::string& passport, 
               const std::string& contact);
-std::string getName() const;
+    
+    std::string getName() const;
     std::string getPassportNumber() const;
     std::string getContactInfo() const;
     
