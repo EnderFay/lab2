@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "station.h"
 
 class Route {
 private:
@@ -23,9 +24,12 @@ public:
     int getArrivalStationId() const;
     std::vector<int> getIntermediateStations() const;
     double getDistance() const;
-};
 
     void setName(const std::string& newName);
     void setDistance(double newDistance);
+
+    void displayInfo(const std::vector<Station>& stations) const;
+    std::string getRouteDescription(const std::vector<Station>& stations) const;
+};
 
 #endif
