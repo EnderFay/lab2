@@ -14,64 +14,40 @@ enum class TrainStatus {
     EXPLODED    
 };
 class Train {
-public:
-    int trainNumber;
-    int capacity;   
-
-   string currentStation;
-    string destination;
-    chrono::system_clock::time_point departureTime;
-    string origin;
-    chrono::system_clock::duration travelDuration;
+private:
+    int id;
+    std::string number;
+    int routeId;
+    int totalSeats;
+    int availableSeats;
+    std::tm departureTime;
+    std::tm arrivalTime;
     TrainStatus status;
-    vector<Ticket> tickets;
-    double speed;           
-    double distanceTraveled; 
-
-   
-    Train(int trainNumber = -1, int capacity = -1, const string& origin = "", const string& destination = "",
-        const chrono::system_clock::time_point& departureTime = chrono::system_clock::time_point(),
-        const chrono::system_clock::duration& travelDuration = chrono::system_clock::duration(),
-        double speed = NAN)  
-    {
-       
-        this->trainNumber = trainNumber;
-        this->capacity = capacity;
-        this->origin = origin;
-        this->destination = destination;
-        this->departureTime = departureTime;
-        this->travelDuration = travelDuration;
-        this->speed = speed;
-        this->status = TrainStatus::SCHEDULED;
-        this->distanceTraveled = 0.0;
-    }
-
-    int getTrainNumber() const {
-        return trainNumber % 1000;  
-    }
-
-    int getAvailableSeats() const {
-        return capacity - tickets.size();  
-
-    bool buyTicket(const Ticket& ticket) {
-        tickets.push_back(ticket);  
-    }
-
-    bool returnTicket(int ticketId) {
-        
-        return true;
-    }
-
-    void updatePosition(const chrono::system_clock::duration& elapsedTime) {
-        distanceTraveled += speed * elapsedTime.count();  
-        if (distanceTraveled > 1000) {
-            status = TrainStatus::EXPLODED;  
-        }
-    }
-
-    friend ostream& operator<<(ostream& os, const Train& train) {
-        os << "Train rp  " << train.trainNumber;  
-        return os;
-    }
-
+    
+public:
+    Train(int id, const std::string& number, int routeId, int totalSeats, 
+          const std::tm& depTime, const std::tm& arrTime);
+    
+    int getId() const;
+    std::string getNumber() const;
+    int getRouteId() const;
+    int getTotalSeats() const;
+    int getAvailableSeats() const;
+    std::tm getDepartureTime() const;
+    std::tm getArrivalTime() const;
+    TrainStatus getStatus() const;
+    std::string getStatusString() const;
+    
+    void setNumber(const std::string& newNumber);
+    void setTotalSeats(int newTotalSeats);
+    void setDepartureTime(const std::tm& newTime);
+    void setArrivalTime(const std::tm& newTime);
+    void setStatus(TrainStatus newStatus);
+    
+    bool bookSeats(int count);
+    bool cancelBooking(int count);
+    
+    void displayInfo(const Route& route) const;
+    void updateStatus(const std::tm& currentTime);
+};
 #endif
