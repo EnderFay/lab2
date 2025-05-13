@@ -8,6 +8,7 @@ Passenger::Passenger(const std::string& name, const std::string& passport,
 std::string Passenger::getName() const { return name; }
 std::string Passenger::getPassportNumber() const { return passportNumber; }
 std::string Passenger::getContactInfo() const { return contactInfo; }
+
 void Passenger::setName(const std::string& newName) { name = newName; }
 void Passenger::setPassportNumber(const std::string& newPassport) { passportNumber = newPassport; }
 void Passenger::setContactInfo(const std::string& newContact) { contactInfo = newContact; }
