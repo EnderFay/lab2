@@ -1,7 +1,6 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 
-#include <string>
 #include <vector>
 #include <ctime>
 #include "station.h"
@@ -15,6 +14,7 @@ private:
     std::vector<Route> routes;
     std::vector<Train> trains;
     std::vector<Ticket> tickets;
+    std::tm currentTime;
     
 public:
     void addStation(const Station& station);
@@ -37,9 +37,13 @@ public:
     const std::vector<Train>& getAllTrains() const;
     Train* findTrain(int id);
     const Train* findTrain(int id) const;
+    void updateTrainStatuses(const std::tm& currentTime);
     
     void addTicket(const Ticket& ticket);
+    void returnTicket(int id);
     const std::vector<Ticket>& getAllTickets() const;
+
+    void setCurrentTime(const std::tm& time);
 };
 
 
