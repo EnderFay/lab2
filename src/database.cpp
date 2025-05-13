@@ -1,8 +1,11 @@
 #include "database.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <algorithm>
+#include <iomanip>
 #include <ctime>
+#include <limits>
 
 void Database::addStation(const Station& station) {
     stations.push_back(station);
@@ -74,4 +77,50 @@ const Route* Database::findRoute(int id) const {
     auto it = std::find_if(routes.begin(), routes.end(),
         [id](const Route& r) { return r.getId() == id; });
     return it != routes.end() ? &(*it) : nullptr;
+}
+
+
+
+
+void Database::addTrain(const Train& train) {
+    trains.push_back(train);
+}
+
+void Database::removeTrain(int id) {
+    trains.erase(std::remove_if(trains.begin(), trains.end(),
+        [id](const Train& t) { return t.getId() == id; }), trains.end());
+}
+
+void Database::editTrain(int id, const std::string& number, int totalSeats) {
+    for (auto& train : trains) {
+        if (train.getId() == id) {
+            train.setNumber(number);
+            train.setTotalSeats(totalSeats);
+            break;
+        }
+    }
+}
+
+const std::vector<Train>& Database::getAllTrains() const {
+    return trains;
+}
+
+Train* Database::findTrain(int id) {
+    auto it = std::find_if(trains.begin(), trains.end(),
+        [id](const Train& t) { return t.getId() == id; });
+    return it != trains.end() ? &(*it) : nullptr;
+}
+
+const Train* Database::findTrain(int id) const {
+    auto it = std::find_if(trains.begin(), trains.end(),
+        [id](const Train& t) { return t.getId() == id; });
+    return it != trains.end() ? &(*it) : nullptr;
+}
+
+void Database::addTicket(const Ticket& ticket) {
+    tickets.push_back(ticket);
+}
+
+const std::vector<Ticket>& Database::getAllTickets() const {
+    return tickets;
 }
