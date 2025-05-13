@@ -81,7 +81,6 @@ const Route* Database::findRoute(int id) const {
 
 
 
-
 void Database::addTrain(const Train& train) {
     trains.push_back(train);
 }
