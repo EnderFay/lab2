@@ -234,3 +234,240 @@ bool Database::loadData(const std::string& filename) {
     std::cout << "Data loaded from " << filename << std::endl;
     return true;
 }
+
+
+
+bool Database::saveStations(std::ofstream& file) const {
+    file << "STATIONS " << stations.size() << std::endl;
+    for (const auto& station : stations) {
+        file << station.getId() << "\n"
+             << station.getName() << "\n"
+             << station.getCity() << std::endl;
+    }
+    return true;
+}
+
+bool Database::loadStations(std::ifstream& file) {
+    std::string header;
+    int count;
+
+    file >> header >> count;
+    file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    if (header != "STATIONS") {
+        std::cerr << "Error: Expected stations header, got " << header << std::endl;
+        return false;
+    }
+
+    for (int i = 0; i < count; ++i) {
+        int id;
+        std::string name, city;
+
+        file >> id;
+        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::getline(file, name);
+        std::getline(file, city);
+
+        name = trim(name);
+        city = trim(city);
+
+        if (file.fail()) {
+            std::cerr << "Error reading station data from file." << std::endl;
+            return false;
+        }
+
+        stations.emplace_back(id, name, city);
+    }
+    return true;
+}
+
+
+
+bool Database::saveRoutes(std::ofstream& file) const {
+    file << "ROUTES " << routes.size() << std::endl;
+    for (const auto& route : routes) {
+        file << route.getId() << "\n"
+             << route.getName() << "\n"
+             << route.getDepartureStationId() << "\n"
+             << route.getArrivalStationId() << "\n"
+             << route.getDistance() << "\n";
+
+
+        const auto& intermediate = route.getIntermediateStations();
+        file << intermediate.size() << std::endl;
+        for (int stationId : intermediate) {
+            file << stationId << std::endl;
+        }
+    }
+    return true;
+}
+
+bool Database::loadRoutes(std::ifstream& file) {
+    std::string header;
+    int count;
+
+    file >> header >> count;
+    file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    if (header != "ROUTES") {
+        std::cerr << "Error: Expected routes header, got " << header << std::endl;
+        return false;
+    }
+
+    for (int i = 0; i < count; ++i) {
+        int id, depId, arrId;
+        std::string name;
+        double distance;
+        int numIntermediate;
+
+        file >> id;
+        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::getline(file, name);
+        file >> depId >> arrId >> distance >> numIntermediate;
+        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        std::vector<int> intermediate(numIntermediate);
+        for (int j = 0; j < numIntermediate; ++j) {
+            file >> intermediate[j];
+            file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+
+        name = trim(name);
+
+        if (file.fail()) {
+            std::cerr << "Error reading route data from file." << std::endl;
+            return false;
+        }
+
+        routes.emplace_back(id, name, depId, arrId, intermediate, distance);
+    }
+    return true;
+}
+
+
+
+bool Database::saveTrains(std::ofstream& file) const {
+   file << "TRAINS " << trains.size() << std::endl;
+    for (const auto& train : trains) {
+        file << train.getId() << "\n"
+             << train.getNumber() << "\n"
+             << train.getRouteId() << "\n"
+             << train.getTotalSeats() << "\n"
+             << train.getAvailableSeats() << "\n";
+
+
+        std::tm depTimeCopy = train.getDepartureTime();
+        std::time_t depTimeT = std::mktime(&depTimeCopy);
+        std::tm arrTimeCopy = train.getArrivalTime();
+        std::time_t arrTimeT = std::mktime(&arrTimeCopy);
+        file << depTimeT << "\n" << arrTimeT << "\n";
+
+        file << static_cast<int>(train.getStatus()) << std::endl;
+    }
+    return true;
+}
+
+bool Database::loadTrains(std::ifstream& file) {
+    std::string header;
+    int count;
+
+    file >> header >> count;
+    file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    if (header != "TRAINS") {
+        std::cerr << "Error: Expected trains header, got " << header << std::endl;
+        return false;
+    }
+
+    for (int i = 0; i < count; ++i) {
+        int id, routeId, totalSeats, availableSeats, statusInt;
+        std::string number;
+        std::time_t depTimeT, arrTimeT;
+
+        file >> id;
+        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::getline(file, number);
+        file >> routeId >> totalSeats >> availableSeats >> depTimeT >> arrTimeT >> statusInt;
+        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        std::tm depTime = *std::localtime(&depTimeT);
+        std::tm arrTime = *std::localtime(&arrTimeT);
+        TrainStatus status = static_cast<TrainStatus>(statusInt);
+
+        number = trim(number);
+
+        if (file.fail()) {
+            std::cerr << "Error reading train data from file." << std::endl;
+            return false;
+        }
+
+        trains.emplace_back(id, number, routeId, totalSeats, depTime, arrTime);
+        trains.back().setStatus(status);
+    }
+    return true;
+}
+
+
+
+bool Database::saveTickets(std::ofstream& file) const {
+    file << "TICKETS " << tickets.size() << std::endl;
+    for (const auto& ticket : tickets) {
+        file << ticket.getId() << "\n"
+             << ticket.getTrainId() << "\n"
+             << ticket.getPassenger().getName() << "\n"
+             << ticket.getPassenger().getPassportNumber() << "\n"
+             << ticket.getPassenger().getContactInfo() << "\n";
+
+
+        std::tm bookingTimeCopy = ticket.getBookingTime();
+        std::time_t bookingTimeT = std::mktime(&bookingTimeCopy);
+
+        file << bookingTimeT << "\n" << ticket.getPrice() << "\n" << ticket.getIsReturned() << std::endl;
+    }
+    return true;
+}
+
+bool Database::loadTickets(std::ifstream& file) {
+    std::string header;
+    int count;
+
+    file >> header >> count;
+    file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    if (header != "TICKETS") {
+        std::cerr << "Error: Expected tickets header, got " << header << std::endl;
+        return false;
+    }
+
+    for (int i = 0; i < count; ++i) {
+        int id, trainId;
+        std::string passengerName, passportNumber, contactInfo;
+        std::time_t bookingTimeT;
+        double price;
+        bool isReturned;
+
+        file >> id;
+        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        file >> trainId;
+        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::getline(file, passengerName);
+        std::getline(file, passportNumber);
+        std::getline(file, contactInfo);
+        file >> bookingTimeT >> price >> isReturned;
+        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        passengerName = trim(passengerName);
+        passportNumber = trim(passportNumber);
+        contactInfo = trim(contactInfo);
+
+        if (file.fail()) {
+            std::cerr << "Error reading ticket data from file." << std::endl;
+            return false;
+        }
+
+        std::tm bookingTime = *std::localtime(&bookingTimeT);
+        Passenger passenger(passengerName, passportNumber, contactInfo);
+        tickets.emplace_back(id, trainId, passenger, bookingTime, price);
+        tickets.back().returnTicket();
+    }
+    return true;
+}
