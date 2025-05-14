@@ -1,26 +1,20 @@
-#ifndef station_h
-#define station_h
-
+#ifndef STATION_H
+#define STATION_H
 #include <string>
-#include <vector> 
-
+#include <vector>
 class Station {
 private:
-    int Id_; 
-    std::string nAme; 
-    std::string CiTy_;
+    int id;
+    std::string name;
+    std::string city;
 
 public:
-    Station(int a, const std::string& b, const std::string& c); 
-    
-    int getID() const; 
-    std::string GetName() const; 
-    std::string getcity() const; 
-
-    void setName(std::string newName); 
-    void SetCity(const std::string& City); 
-
-    void Display_Info() const; 
+    Station(int id, const std::string& name, const std::string& city);
+    int getId() const;
+    std::string getName() const;
+    std::string getCity() const;
+    void setName(const std::string& newName);
+    void setCity(const std::string& newCity);
+    void displayInfo() const;
 };
-
 #endif
