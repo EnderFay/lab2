@@ -49,3 +49,31 @@ void Route::displayInfo(const std::vector<Station>& stations) const {
         std::cout << "Arrival: " << arrStation->getName() << "\n";
     }
 }
+std::string Route::getRouteDescription(const std::vector<Station>& stations) const {
+    std::string description;
+    
+    auto depStation = std::find_if(stations.begin(), stations.end(), 
+        [this](const Station& s) { return s.getId() == departureStationId; });
+    auto arrStation = std::find_if(stations.begin(), stations.end(), 
+        [this](const Station& s) { return s.getId() == arrivalStationId; });
+    
+    if (depStation != stations.end()) {
+        description += depStation->getName();
+    }
+    
+    description += " -> ";
+    
+    for (int stationId : intermediateStations) {
+        auto it = std::find_if(stations.begin(), stations.end(), 
+            [stationId](const Station& s) { return s.getId() == stationId; });
+        if (it != stations.end()) {
+            description += it->getName() + " -> ";
+        }
+    }
+    
+    if (arrStation != stations.end()) {
+        description += arrStation->getName();
+    }
+    
+    return description;
+}
