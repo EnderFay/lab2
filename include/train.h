@@ -7,6 +7,7 @@
 #include "route.h"
 using namespace std;
 enum class TrainStatus {
+    WAITING,
     SCHEDULED,
     DEPARTED,
     ARRIVED,
