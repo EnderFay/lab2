@@ -3,17 +3,15 @@
 
 #include <string>
 #include <ctime>
-#include <vector>
 #include "route.h"
-using namespace std;
+
 enum class TrainStatus {
-    WAITING,
-    SCHEDULED,
-    DEPARTED,
-    ARRIVED,
-    LOST,       
-    EXPLODED    
+    WAITING,    // ожидает отправления
+    ON_WAY,     // в пути
+    ARRIVED,    // прибыл
+    CANCELLED   // отменен
 };
+
 class Train {
 private:
     int id;
@@ -24,11 +22,11 @@ private:
     std::tm departureTime;
     std::tm arrivalTime;
     TrainStatus status;
-    
+
 public:
-    Train(int id, const std::string& number, int routeId, int totalSeats, 
-          const std::tm& depTime, const std::tm& arrTime);
-    
+    Train(int id, const std::string& number, int routeId, int totalSeats,
+        const std::tm& depTime, const std::tm& arrTime);
+
     int getId() const;
     std::string getNumber() const;
     int getRouteId() const;
@@ -38,17 +36,18 @@ public:
     std::tm getArrivalTime() const;
     TrainStatus getStatus() const;
     std::string getStatusString() const;
-    
+
     void setNumber(const std::string& newNumber);
     void setTotalSeats(int newTotalSeats);
     void setDepartureTime(const std::tm& newTime);
     void setArrivalTime(const std::tm& newTime);
     void setStatus(TrainStatus newStatus);
-    
+
     bool bookSeats(int count);
     bool cancelBooking(int count);
-    
+
     void displayInfo(const Route& route) const;
     void updateStatus(const std::tm& currentTime);
 };
-#endif
+
+#endif 
